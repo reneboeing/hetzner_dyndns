@@ -28,13 +28,13 @@ A Go implementation of a Hetzner DNS API client with a built-in DynDNS server th
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/hetzner-dns-api.git
-cd hetzner-dns-api
+git clone https://github.com/reneboeing/hetzner-dyndns.git
+cd hetzner-dyndns
 ```
 
 2. Build the application:
 ```bash
-go build -o hetzner-dns-bridge
+go build -o fritzbox-hetzner-dyndns
 ```
 
 ### Configuration
@@ -55,7 +55,7 @@ The port is where the DynDNS server will listen for requests.
 ### Running the Server
 
 ```bash
-./hetzner-dns-bridge
+./fritzbox-hetzner-dyndns
 ```
 
 The server will start and display configuration information:
@@ -235,7 +235,7 @@ The project supports building Docker images for multiple architectures (AMD64 an
 
 Build for your current platform:
 ```bash
-docker build -t hetzner-dns-bridge .
+docker build -t fritzbox-hetzner-dyndns .
 ```
 
 #### Multi-Architecture Build
@@ -249,7 +249,7 @@ docker buildx inspect --bootstrap
 # Build and push multi-arch images
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
-  -t yourusername/hetzner-dns-bridge:latest \
+  -t yourusername/fritzbox-hetzner-dyndns:latest \
   --push .
 ```
 
@@ -259,7 +259,7 @@ Build for AMD64 only:
 ```bash
 docker buildx build \
   --platform linux/amd64 \
-  -t hetzner-dns-bridge:amd64 \
+  -t fritzbox-hetzner-dyndns:amd64 \
   --load .
 ```
 
@@ -267,7 +267,7 @@ Build for ARM64 only:
 ```bash
 docker buildx build \
   --platform linux/arm64 \
-  -t hetzner-dns-bridge:arm64 \
+  -t fritzbox-hetzner-dyndns:arm64 \
   --load .
 ```
 
@@ -278,18 +278,18 @@ docker buildx build \
 docker run -p 8080:8080 \
   -e HETZNER_DNS_API_KEY="your-token" \
   -e DYNDNS_PASSWORD="your-password" \
-  hetzner-dns-bridge
+  fritzbox-hetzner-dyndns
 
 # With all environment variables
 docker run -d \
-  --name hetzner-dns-bridge \
+  --name fritzbox-hetzner-dyndns \
   --restart unless-stopped \
   -p 8080:8080 \
   -e HETZNER_DNS_API_KEY="your-token" \
   -e DYNDNS_PASSWORD="your-password" \
   -e DYNDNS_USERNAME="admin" \
   -e DYNDNS_PORT="8080" \
-  hetzner-dns-bridge
+  fritzbox-hetzner-dyndns
 ```
 
 #### Docker Compose
@@ -300,11 +300,11 @@ Create a `docker-compose.yml` file:
 version: '3.8'
 
 services:
-  hetzner-dns-bridge:
+  fritzbox-hetzner-dyndns:
     build: .
     # Or use pre-built image:
-    # image: yourusername/hetzner-dns-bridge:latest
-    container_name: hetzner-dns-bridge
+    # image: yourusername/fritzbox-hetzner-dyndns:latest
+    container_name: fritzbox-hetzner-dyndns
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -332,103 +332,4 @@ docker-compose up -d
 
 # View logs
 docker-compose logs -f
-```
-
-### Kubernetes Deployment
-
-Create `k8s-deployment.yaml`:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: hetzner-dns-bridge
-  labels:
-    app: hetzner-dns-bridge
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: hetzner-dns-bridge
-  template:
-    metadata:
-      labels:
-        app: hetzner-dns-bridge
-    spec:
-      containers:
-      - name: hetzner-dns-bridge
-        image: yourusername/hetzner-dns-bridge:latest
-        ports:
-        - containerPort: 8080
-        env:
-        - name: HETZNER_DNS_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: hetzner-dns-secrets
-              key: api-key
-        - name: DYNDNS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: hetzner-dns-secrets
-              key: dyndns-password
-        - name: DYNDNS_USERNAME
-          value: "admin"
-        - name: DYNDNS_PORT
-          value: "8080"
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        resources:
-          requests:
-            memory: "32Mi"
-            cpu: "50m"
-          limits:
-            memory: "128Mi"
-            cpu: "200m"
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsNonRoot: true
-          runAsUser: 1001
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: hetzner-dns-bridge-service
-spec:
-  selector:
-    app: hetzner-dns-bridge
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-  type: ClusterIP
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: hetzner-dns-secrets
-type: Opaque
-stringData:
-  api-key: "your-hetzner-api-token"
-  dyndns-password: "your-dyndns-password"
-```
-
-Deploy to Kubernetes:
-```bash
-kubectl apply -f k8s-deployment.yaml
 ```

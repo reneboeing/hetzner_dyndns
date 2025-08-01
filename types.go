@@ -1,6 +1,5 @@
 package main
 
-import "time"
 
 // DNSRecord represents a DNS record in the Hetzner DNS API
 type DNSRecord struct {
@@ -8,7 +7,7 @@ type DNSRecord struct {
 	Type     string `json:"type"`
 	Name     string `json:"name"`
 	Value    string `json:"value"`
-	TTL      *int   `json:"ttl,omitempty"`
+	TTL      int   `json:"ttl"`
 	ZoneID   string `json:"zone_id,omitempty"`
 	Created  string `json:"created,omitempty"`
 	Modified string `json:"modified,omitempty"`
@@ -23,13 +22,12 @@ type Zone struct {
 	LegacyDNSHost   string    `json:"legacy_dns_host"`
 	LegacyNS        []string  `json:"legacy_ns"`
 	NS              []string  `json:"ns"`
-	Created         time.Time `json:"created"`
-	Verified        time.Time `json:"verified"`
-	Modified        time.Time `json:"modified"`
+	Created         string `json:"created"`
+	Verified        string `json:"verified"`
+	Modified        string `json:"modified"`
 	Project         string    `json:"project"`
 	Owner           string    `json:"owner"`
 	Permission      string    `json:"permission"`
-	ZoneType        string    `json:"zone_type"`
 	Status          string    `json:"status"`
 	Paused          bool      `json:"paused"`
 	IsSecondaryDNS  bool      `json:"is_secondary_dns"`
@@ -78,7 +76,7 @@ type CreateRecordRequest struct {
 	Type   string `json:"type"`
 	Name   string `json:"name"`
 	Value  string `json:"value"`
-	TTL    *int   `json:"ttl,omitempty"`
+	TTL    int   `json:"ttl"`
 	ZoneID string `json:"zone_id"`
 }
 
@@ -87,5 +85,6 @@ type UpdateRecordRequest struct {
 	Type  string `json:"type"`
 	Name  string `json:"name"`
 	Value string `json:"value"`
-	TTL   *int   `json:"ttl,omitempty"`
+	TTL   int   `json:"ttl"`
+	ZoneID string `json:"zone_id"`
 }
