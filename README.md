@@ -28,8 +28,8 @@ A pure Go implementation of a Hetzner DNS API client with a built-in DynDNS serv
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/hetzner-dns-api.git
-cd hetzner-dns-api
+git clone https://github.com/reneboeing/hetzner-dyndns.git
+cd hetzner-dyndns
 ```
 
 2. Build the application:
@@ -334,101 +334,3 @@ docker-compose up -d
 docker-compose logs -f
 ```
 
-### Kubernetes Deployment
-
-Create `k8s-deployment.yaml`:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: fritzbox-hetzner-dyndns
-  labels:
-    app: fritzbox-hetzner-dyndns
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: fritzbox-hetzner-dyndns
-  template:
-    metadata:
-      labels:
-        app: fritzbox-hetzner-dyndns
-    spec:
-      containers:
-      - name: fritzbox-hetzner-dyndns
-        image: yourusername/fritzbox-hetzner-dyndns:latest
-        ports:
-        - containerPort: 8080
-        env:
-        - name: HETZNER_DNS_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: hetzner-dns-secrets
-              key: api-key
-        - name: DYNDNS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: hetzner-dns-secrets
-              key: dyndns-password
-        - name: DYNDNS_USERNAME
-          value: "admin"
-        - name: DYNDNS_PORT
-          value: "8080"
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        resources:
-          requests:
-            memory: "32Mi"
-            cpu: "50m"
-          limits:
-            memory: "128Mi"
-            cpu: "200m"
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsNonRoot: true
-          runAsUser: 1001
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: fritzbox-hetzner-dyndns-service
-spec:
-  selector:
-    app: fritzbox-hetzner-dyndns
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-  type: ClusterIP
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: hetzner-dns-secrets
-type: Opaque
-stringData:
-  api-key: "your-hetzner-api-token"
-  dyndns-password: "your-dyndns-password"
-```
-
-Deploy to Kubernetes:
-```bash
-kubectl apply -f k8s-deployment.yaml
-```
