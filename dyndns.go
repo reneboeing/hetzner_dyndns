@@ -186,11 +186,15 @@ func (s *DynDNSServer) updateDNSRecord(hostname, ip, recordType string) error {
 	if existingRecord != nil {
 		// Update existing record
 		updateReq := UpdateRecordRequest{
+			ZoneID: targetZone.ID,
 			Type:  recordType,
 			Name:  recordName,
 			Value: ip,
 			TTL:   existingRecord.TTL,
 		}
+
+		log.Printf("UpdateRecord %v",
+			   updateReq)
 
 		_, err = s.client.UpdateRecord(existingRecord.ID, updateReq)
 		if err != nil {
@@ -200,15 +204,18 @@ func (s *DynDNSServer) updateDNSRecord(hostname, ip, recordType string) error {
 		log.Printf("Updated existing record %s (%s) to %s", existingRecord.ID, recordType, ip)
 	} else {
 		// Create new record
-		ttl := 300 // 5 minutes TTL for dynamic records
+		ttl := 3600 // 60 minutes TTL for dynamic records
 		createReq := CreateRecordRequest{
 			Type:   recordType,
 			Name:   recordName,
 			Value:  ip,
-			TTL:    &ttl,
+			TTL:    ttl,
 			ZoneID: targetZone.ID,
 		}
 
+
+		log.Printf("createReq %v",
+			   createReq)
 		_, err = s.client.CreateRecord(createReq)
 		if err != nil {
 			return fmt.Errorf("failed to create record: %w", err)

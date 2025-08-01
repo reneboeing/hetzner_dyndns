@@ -1,6 +1,6 @@
 # Hetzner DNS API Client with FritzBox DynDNS Bridge
 
-A Go implementation of a Hetzner DNS API client with a built-in DynDNS server that accepts FritzBox-compatible update requests and manages DNS records through the Hetzner DNS API.
+A pure Go implementation of a Hetzner DNS API client with a built-in DynDNS server that accepts FritzBox-compatible update requests and manages DNS records through the Hetzner DNS API.
 
 ## Features
 
@@ -333,3 +333,4 @@ docker-compose up -d
 # View logs
 docker-compose logs -f
 ```
+
