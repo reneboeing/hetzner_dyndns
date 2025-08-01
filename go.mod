@@ -1,3 +1,3 @@
-module hetzner_golang_api_impl
+module fritzbox-hetzner-dyndns
 
 go 1.24

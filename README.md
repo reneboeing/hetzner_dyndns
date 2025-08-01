@@ -1,6 +1,6 @@
 # Hetzner DNS API Client with FritzBox DynDNS Bridge
 
-A Go implementation of a Hetzner DNS API client with a built-in DynDNS server that accepts FritzBox-compatible update requests and manages DNS records through the Hetzner DNS API.
+A pure Go implementation of a Hetzner DNS API client with a built-in DynDNS server that accepts FritzBox-compatible update requests and manages DNS records through the Hetzner DNS API.
 
 ## Features
 
@@ -34,7 +34,7 @@ cd hetzner-dns-api
 
 2. Build the application:
 ```bash
-go build -o hetzner-dns-bridge
+go build -o fritzbox-hetzner-dyndns
 ```
 
 ### Configuration
@@ -55,7 +55,7 @@ The port is where the DynDNS server will listen for requests.
 ### Running the Server
 
 ```bash
-./hetzner-dns-bridge
+./fritzbox-hetzner-dyndns
 ```
 
 The server will start and display configuration information:
@@ -235,7 +235,7 @@ The project supports building Docker images for multiple architectures (AMD64 an
 
 Build for your current platform:
 ```bash
-docker build -t hetzner-dns-bridge .
+docker build -t fritzbox-hetzner-dyndns .
 ```
 
 #### Multi-Architecture Build
@@ -249,7 +249,7 @@ docker buildx inspect --bootstrap
 # Build and push multi-arch images
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
-  -t yourusername/hetzner-dns-bridge:latest \
+  -t yourusername/fritzbox-hetzner-dyndns:latest \
   --push .
 ```
 
@@ -259,7 +259,7 @@ Build for AMD64 only:
 ```bash
 docker buildx build \
   --platform linux/amd64 \
-  -t hetzner-dns-bridge:amd64 \
+  -t fritzbox-hetzner-dyndns:amd64 \
   --load .
 ```
 
@@ -267,7 +267,7 @@ Build for ARM64 only:
 ```bash
 docker buildx build \
   --platform linux/arm64 \
-  -t hetzner-dns-bridge:arm64 \
+  -t fritzbox-hetzner-dyndns:arm64 \
   --load .
 ```
 
@@ -278,18 +278,18 @@ docker buildx build \
 docker run -p 8080:8080 \
   -e HETZNER_DNS_API_KEY="your-token" \
   -e DYNDNS_PASSWORD="your-password" \
-  hetzner-dns-bridge
+  fritzbox-hetzner-dyndns
 
 # With all environment variables
 docker run -d \
-  --name hetzner-dns-bridge \
+  --name fritzbox-hetzner-dyndns \
   --restart unless-stopped \
   -p 8080:8080 \
   -e HETZNER_DNS_API_KEY="your-token" \
   -e DYNDNS_PASSWORD="your-password" \
   -e DYNDNS_USERNAME="admin" \
   -e DYNDNS_PORT="8080" \
-  hetzner-dns-bridge
+  fritzbox-hetzner-dyndns
 ```
 
 #### Docker Compose
@@ -300,11 +300,11 @@ Create a `docker-compose.yml` file:
 version: '3.8'
 
 services:
-  hetzner-dns-bridge:
+  fritzbox-hetzner-dyndns:
     build: .
     # Or use pre-built image:
-    # image: yourusername/hetzner-dns-bridge:latest
-    container_name: hetzner-dns-bridge
+    # image: yourusername/fritzbox-hetzner-dyndns:latest
+    container_name: fritzbox-hetzner-dyndns
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -342,22 +342,22 @@ Create `k8s-deployment.yaml`:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hetzner-dns-bridge
+  name: fritzbox-hetzner-dyndns
   labels:
-    app: hetzner-dns-bridge
+    app: fritzbox-hetzner-dyndns
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hetzner-dns-bridge
+      app: fritzbox-hetzner-dyndns
   template:
     metadata:
       labels:
-        app: hetzner-dns-bridge
+        app: fritzbox-hetzner-dyndns
     spec:
       containers:
-      - name: hetzner-dns-bridge
-        image: yourusername/hetzner-dns-bridge:latest
+      - name: fritzbox-hetzner-dyndns
+        image: yourusername/fritzbox-hetzner-dyndns:latest
         ports:
         - containerPort: 8080
         env:
@@ -407,10 +407,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: hetzner-dns-bridge-service
+  name: fritzbox-hetzner-dyndns-service
 spec:
   selector:
-    app: hetzner-dns-bridge
+    app: fritzbox-hetzner-dyndns
   ports:
     - protocol: TCP
       port: 8080

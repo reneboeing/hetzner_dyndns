@@ -204,7 +204,7 @@ func (s *DynDNSServer) updateDNSRecord(hostname, ip, recordType string) error {
 		log.Printf("Updated existing record %s (%s) to %s", existingRecord.ID, recordType, ip)
 	} else {
 		// Create new record
-		ttl := 3600 // 5 minutes TTL for dynamic records
+		ttl := 3600 // 60 minutes TTL for dynamic records
 		createReq := CreateRecordRequest{
 			Type:   recordType,
 			Name:   recordName,
