@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"io"
 	"net/http"
 	"time"
@@ -43,6 +44,7 @@ func (c *Client) makeRequest(method, endpoint string, body interface{}) (*http.R
 		reqBody = bytes.NewBuffer(jsonBody)
 	}
 
+	log.Printf("Execute request to '%s' using body '%s'", endpoint, reqBody)
 	req, err := http.NewRequest(method, c.BaseURL+endpoint, reqBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
@@ -74,6 +76,8 @@ func (c *Client) handleResponse(resp *http.Response, result interface{}) error {
 		if err := json.Unmarshal(body, &apiError); err != nil {
 			return fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
 		}
+
+		log.Printf("Error from API: '%d' using body '%s'", resp.StatusCode, string(body))
 		return fmt.Errorf("API error: %s", apiError.Error.Message)
 	}
 
