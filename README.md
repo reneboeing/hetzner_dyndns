@@ -229,7 +229,7 @@ Test coverage includes:
 
 ### Docker Multi-Architecture Build
 
-The project supports building Docker images for multiple architectures (AMD64 and ARM64).
+The project supports building Docker images for multiple architectures (AMD64 and ARM64). TODO: Run as non root in container
 
 #### Single Architecture Build
 
@@ -247,10 +247,7 @@ docker buildx create --name multiarch --driver docker-container --use
 docker buildx inspect --bootstrap
 
 # Build and push multi-arch images
-docker buildx build \
-  --platform linux/amd64,linux/arm64 \
-  -t yourusername/fritzbox-hetzner-dyndns:latest \
-  --push .
+docker buildx build --platform linux/amd64,linux/arm64 --tag=yourusername/fritzbox-hetzner-dyndns:v1 --builder container --push .
 ```
 
 #### Architecture-Specific Builds
