@@ -37,6 +37,14 @@ cd hetzner-dyndns
 go build -o fritzbox-hetzner-dyndns
 ```
 
+Or use my prebuilt dockerimage (running as root for now):
+docker run -p 8080:8080 \
+  -e HETZNER_DNS_API_KEY="your-token" \
+  -e DYNDNS_PORT="8080" \
+  -e DYNDNS_USERNAME="your-user" \
+  -e DYNDNS_PASSWORD="your-password" \
+  rornaz/fritzbox-hetzner-dyndns:v1
+
 ### Configuration
 
 Set the required environment variables:
@@ -96,11 +104,6 @@ curl -u admin:password "http://localhost:8080/update?hostname=home.example.com&m
 ### Update Both IPv4 and IPv6 (Dual-Stack)
 ```bash
 curl -u admin:password "http://localhost:8080/update?hostname=home.example.com&myip=203.0.113.1&myipv6=2001:db8::1"
-```
-
-### Auto-detect Client IP
-```bash
-curl -u admin:password "http://localhost:8080/update?hostname=home.example.com"
 ```
 
 ## Response Format
